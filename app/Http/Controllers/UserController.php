@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -13,43 +15,52 @@ class UserController extends Controller
         return view('users', compact('users'));
     }
 
-    public function create()
-    {
-        DB::table('users')->insert([
-            'name' => $_POST['name'],
-            'email' => $_POST['email'],
-            'password' => $_POST['password']
-        ]);
+    public function create(Request $request)
+{
+    $request->validate([
+        'name' => 'required|min:3|max:50',
+        'email' => 'required|email',
+        'password' => 'required|min:6'
+    ]);
 
-        return redirect()->back();
-    }
+    DB::table('users')->insert([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => $request->password
+    ]);
+
+    return redirect()->back();
+}
 
     public function destroy($id)
     {
-        DB::table('users')->where('id', $id)->delete();
-
-        return redirect()->back();
+      $user = User::find($id);
+      $user->delete();
+      return redirect()->back();
     }
 
     public function edit($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
-
-        $users = DB::table('users')->get();
-
-        return view('users', compact('user', 'users'));
+       $user = User::find($id);
+       $users = User::all();
+       return view('users', compact('user', 'users'));
     }
 
-    public function update()
-    {
-        $id = $_POST['id'];
 
-        DB::table('users')->where('id', $id)->update([
-            'name' => $_POST['name'],
-            'email' => $_POST['email'],
-            'password' => $_POST['password']
-        ]);
+    public function update(Request $request)
+{
+    $request->validate([
+        'name' => 'required|min:3|max:50',
+        'email' => 'required|email',
+        'password' => 'required|min:6'
+    ]);
 
-        return redirect('users');
-    }
+    $user = User::find($request->id);
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->password = $request->password;
+    $user->save();
+
+    return redirect('users');
+}
 }

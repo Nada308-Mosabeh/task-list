@@ -1,7 +1,17 @@
 @extends('layouts.app')
 @section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>There were some errors:</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-<h3 class="mb-3 text-dark">Task List App</h3>
+<h3 class="mb-3 text-dark">Task List</h3>
 
 <div style="max-width: 700px; margin-left: 120px;">
 
@@ -34,7 +44,8 @@
 
                     <div class="mb-3">
                         <label class="form-label small">Task</label>
-                        <input type="text" name="name" class="form-control form-control-sm">
+                        <input type="text" name="name" class="form-control form-control-sm" @error('name') is-invalid @enderror>
+
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-sm">+ Add Task</button>
@@ -82,6 +93,7 @@
             </table>
         </div>
     </div>
+
 
 </div>
 
